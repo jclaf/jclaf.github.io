@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jean-Christophe Lafleur — Data Engineer · Data Scientist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #141414;
+      --card: #1a1a1a;
+      --accent: #c9a84c;
+      --accent2: #8a7560;
+      --accent3: #c9a84c;
+      --text: #f0ebe3;
+      --muted: #7a7570;
+      --border: rgba(201,168,76,0.12);
+      --glow: rgba(201,168,76,0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.6;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.25rem 4rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(10,10,15,0.85);
+    }
+    .nav-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 0 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 50%, rgba(201,168,76,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(138,117,96,0.07) 0%, transparent 60%);
+    }
+
+    .grid-lines {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 900px; }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 8vw, 7.5rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+
+    h1 .line2 {
+      display: block;
+      background: linear-gradient(135deg, #c9a84c 0%, #f0d9a0 60%, #b8904a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.8;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+
+    .hero-cta {
+      margin-top: 2.5rem;
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      border-radius: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0d0d0d;
+    }
+    .btn-primary:hover {
+      background: #f0d9a0;
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px var(--glow);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .hero-metrics {
+      position: absolute; right: 4rem; bottom: 4rem;
+      display: flex; gap: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 1s forwards;
+    }
+
+    .metric { text-align: right; }
+    .metric-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .metric-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.3rem;
+    }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 7rem 4rem; }
+
+    .section-header {
+      display: flex; align-items: center; gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .section-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      font-weight: 400;
+      letter-spacing: 0.01em;
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--surface); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr 1fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+
+    /* Photo encadrement */
+    .about-photo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .photo-frame {
+      width: 200px;
+      height: 240px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .photo-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.04) 0%, transparent 60%);
+    }
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      border-top: 2px solid var(--accent);
+      border-left: 2px solid var(--accent);
+    }
+    .photo-frame-br {
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 40px; height: 40px;
+      border-bottom: 2px solid var(--accent);
+      border-right: 2px solid var(--accent);
+    }
+    .photo-placeholder-icon {
+      font-size: 3rem;
+      opacity: 0.25;
+      position: relative;
+      z-index: 1;
+    }
+    .photo-placeholder-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      line-height: 1.6;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+    .photo-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+    .photo-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--accent);
+      text-align: center;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .about-text p {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.9;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+    .about-text p strong { color: var(--text); }
+
+    .about-tags {
+      display: flex; flex-wrap: wrap; gap: 0.6rem;
+      margin-top: 2rem;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.35rem 0.9rem;
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 3px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.8rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .stat-card:hover {
+      border-color: rgba(0,229,255,0.3);
+      transform: translateY(-3px);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #c9a84c, #8a7560);
+    }
+    .stat-card .num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-card .desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
+
+    /* ─── PROJETS ─── */
+    #projects { background: var(--bg); }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.2rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .project-card:hover {
+      border-color: rgba(0,229,255,0.35);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px var(--glow);
+    }
+
+    .project-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(0,229,255,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .project-card:hover::after { opacity: 1; }
+
+    .project-icon {
+      width: 48px; height: 48px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-type {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+
+    .project-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin-bottom: 0.8rem;
+    }
+
+    .project-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-metric {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      background: rgba(201,168,76,0.1);
+      border-radius: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+
+    .project-stack {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+    }
+    .stack-tag {
+      padding: 0.25rem 0.6rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    /* ─── EXPÉRIENCES ─── */
+    #experience { background: var(--surface); }
+
+    .timeline {
+      position: relative;
+      padding-left: 2.5rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10px; bottom: 10px;
+      width: 1px;
+      background: linear-gradient(to bottom, #c9a84c, #8a7560, transparent);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 3.5rem;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-dot {
+      position: absolute;
+      left: -2.5rem;
+      top: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      transform: translateX(-4px);
+    }
+
+    .tl-header {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .tl-role {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .tl-company {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      margin-top: 0.2rem;
+    }
+    .tl-date {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+      padding: 0.3rem 0.8rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+    }
+
+    .tl-bullets {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .tl-bullets li {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      padding: 0.4rem 0;
+      padding-left: 1.2rem;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .tl-bullets li::before {
+      content: '→';
+      position: absolute; left: 0;
+      color: var(--accent2);
+      font-size: 0.75rem;
+    }
+    .tl-bullets li:hover {
+      border-left-color: var(--accent2);
+      color: var(--text);
+      padding-left: 1.5rem;
+    }
+
+    .tl-stack {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-top: 1.2rem;
+    }
+
+    /* ─── SKILLS ─── */
+    #skills { background: var(--bg); }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .skill-group {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.8rem;
+      transition: border-color 0.2s;
+    }
+    .skill-group:hover { border-color: rgba(0,229,255,0.25); }
+
+    .skill-group-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+
+    .skill-item {
+      margin-bottom: 1rem;
+    }
+    .skill-top {
+      display: flex; justify-content: space-between;
+      font-size: 0.82rem;
+      margin-bottom: 0.4rem;
+    }
+    .skill-top .name { color: var(--text); }
+    .skill-top .level {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .skill-bar {
+      height: 3px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #c9a84c, #8a7560);
+      transform-origin: left;
+      animation: fillBar 1s ease-out forwards;
+      transform: scaleX(0);
+    }
+
+    @keyframes fillBar {
+      to { transform: scaleX(1); }
+    }
+
+    /* ─── STACK TECHNIQUE LOGOS ─── */
+    #skills { background: var(--bg); }
+
+    .tech-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+    .tech-category {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.8rem 2rem;
+      transition: border-color 0.2s;
+    }
+    .tech-category:hover { border-color: rgba(201,168,76,0.2); }
+    .tech-cat-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.4rem;
+    }
+    .tech-logos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .tech-logo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      width: 70px;
+      transition: transform 0.2s;
+      cursor: default;
+    }
+    .tech-logo-item:hover { transform: translateY(-4px); }
+    .tech-logo-item svg {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+    }
+    .tech-logo-item span {
+      font-size: 0.62rem;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* ─── CERTIFICATIONS ─── */
+    #certifications { background: var(--surface); }
+
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .cert-card {
+      display: flex; align-items: center; gap: 1.2rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem 1.6rem;
+      transition: all 0.2s;
+    }
+    .cert-card:hover {
+      border-color: rgba(201,168,76,0.4);
+      transform: translateX(5px);
+    }
+    .cert-icon {
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+    .cert-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .cert-issuer {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      margin-top: 0.2rem;
+    }
+
+    .certs-subsection { }
+    .certs-sub-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── CONTACT ─── */
+    #contact {
+      background: var(--bg);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #contact::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 100%, rgba(201,168,76,0.05) 0%, transparent 70%);
+    }
+
+    .contact-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .contact-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .contact-links {
+      display: flex; justify-content: center;
+      flex-wrap: wrap; gap: 1rem;
+      position: relative;
+    }
+
+    .contact-link {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 1rem 2rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      transition: all 0.25s;
+    }
+    .contact-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 30px var(--glow);
+      transform: translateY(-3px);
+    }
+    .contact-link svg { width: 18px; height: 18px; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .acad-subsection {
+      margin-bottom: 2.5rem;
+    }
+    .acad-subsection-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1.2rem;
+      padding: 0.4rem 1rem;
+      background: rgba(255,255,255,0.04);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 4px 4px 0;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── ACCORDION ─── */
+    .accordion-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .accordion-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .accordion-item:hover { border-color: rgba(0,229,255,0.25); }
+
+    .accordion-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 1.8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      gap: 1rem;
+    }
+    .accordion-trigger-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .accordion-badge {
+      padding: 0.3rem 0.9rem;
+      border-radius: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .master-badge {
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.3);
+      color: var(--accent);
+    }
+    .licence-badge {
+      background: rgba(138,117,96,0.12);
+      border: 1px solid rgba(138,117,96,0.3);
+      color: #b09a82;
+    }
+    .accordion-school {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+    .accordion-arrow {
+      font-size: 0.65rem;
+      color: var(--muted);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+    .accordion-trigger.open .accordion-arrow { transform: rotate(90deg); }
+
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding: 0 1.8rem;
+    }
+    .accordion-body.open {
+      max-height: 9999px;
+      padding-bottom: 1.8rem;
+    }
+
+    /* Sub-accordion */
+    .accordion-sub {
+      margin-bottom: 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+    }
+    .accordion-sub-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 1.2rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      background: rgba(255,255,255,0.02);
+      border-left: 3px solid var(--accent);
+      transition: background 0.2s;
+      user-select: none;
+    }
+    .accordion-sub-trigger:hover { background: rgba(255,255,255,0.05); }
+    .sub-arrow {
+      font-size: 0.6rem;
+      color: var(--muted);
+      transition: transform 0.3s;
+    }
+    .accordion-sub-trigger.open .sub-arrow { transform: rotate(90deg); }
+    .accordion-sub-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding: 0 1rem;
+    }
+    .accordion-sub-body.open {
+      max-height: 9999px;
+      padding: 1rem;
+    }
+
+    /* ─── PROJETS ACADÉMIQUES ─── */
+    #academic { background: var(--bg); }
+
+    .acad-level-label {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .acad-badge {
+      padding: 0.35rem 1rem;
+      border-radius: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .acad-badge.master {
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.3);
+      color: var(--accent);
+    }
+    .acad-badge.licence {
+      background: rgba(138,117,96,0.12);
+      border: 1px solid rgba(138,117,96,0.3);
+      color: #b09a82;
+    }
+    .acad-school {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .acad-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .acad-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem;
+      transition: all 0.25s;
+    }
+    .acad-card:hover {
+      border-color: rgba(0,229,255,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+    }
+    .acad-card-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.9rem;
+    }
+    .acad-icon { font-size: 1.5rem; }
+    .acad-lang {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.18);
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+    }
+    .acad-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .acad-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+    .acad-tags {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+    }
+    .acad-tag {
+      padding: 0.2rem 0.55rem;
+      background: rgba(255,255,255,0.04);
+      border-radius: 3px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.animate-ready {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .reveal.animate-ready.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── CURSOR GLOW ─── */
+    .cursor-glow {
+      position: fixed;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      transition: left 0.1s ease, top 0.1s ease;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 3px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      #hero, section { padding: 5rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; }
+      .photo-frame { width: 160px; height: 190px; }
+      .about-photo { flex-direction: row; align-items: flex-start; flex-wrap: wrap; }
+      .hero-metrics { position: static; margin-top: 3rem; flex-wrap: wrap; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">J·C Lafleur <span style="color:var(--accent);font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.08em"> Data Engineer · Scientist</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">Profil</a></li>
+    <li><a href="#projects">Projets</a></li>
+    <li><a href="#experience">Expériences</a></li>
+    <li><a href="#skills">Compétences</a></li>
+    <li><a href="#academic">Académique</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="grid-lines"></div>
+
+  <div class="hero-content">
+    <p class="hero-tag">// Data Scientist · Data Engineer · Créteil 94000</p>
+    <h1>
+      Jean-Christophe
+      <span class="line2">Lafleur</span>
+    </h1>
+    <p class="hero-sub">
+      Je transforme des données multi-sources — capteurs, logs, vidéo, SI — en
+      <strong style="color:var(--text)">leviers d'aide à la décision</strong>. Architectures hybrides
+      NAS / Cloud, MLOps, simulation de production et
+      <strong style="color:var(--text)">Business Intelligence</strong> pour optimiser les processus opérationnels.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        Voir mes projets
+      </a>
+      <a href="mailto:jeanchristophe.lafleur1@gmail.com" class="btn btn-outline">Me contacter</a>
+    </div>
+  </div>
+
+  <div class="hero-metrics">
+    <div class="metric">
+      <div class="metric-num">95%</div>
+      <div class="metric-label">IA Santé — fiabilité</div>
+    </div>
+    <div class="metric">
+      <div class="metric-num">60fps</div>
+      <div class="metric-label">Face Matching GPU</div>
+    </div>
+    <div class="metric">
+      <div class="metric-num">1k/s</div>
+      <div class="metric-label">Requêtes — Reco Engine</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header reveal">
+    <span class="section-num">01 —</span>
+    <h2 class="section-title">Profil</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="about-grid">
+
+    <div class="about-photo reveal">
+      <div class="photo-frame">
+        <!-- Remplace ce bloc par une balise <img src="photo.jpg" alt="Jean-Christophe Lafleur"> -->
+        <span class="photo-placeholder-icon">👤</span>
+        <span class="photo-placeholder-text">Ajoute ta photo<br>ici</span>
+        <div class="photo-frame-br"></div>
+      </div>
+      <div class="photo-name">Jean-Christophe Lafleur</div>
+      <div class="photo-title">Data Engineer · Scientist</div>
+    </div>
+
+    <div class="about-text reveal">
+      <p>
+        Data Scientist spécialisé dans la modélisation prédictive,
+        je transforme des données multi-sources — capteurs, SI, logs, vidéo — en
+        <strong>leviers d'aide à la décision</strong> concrets.
+      </p>
+      <p>
+        Je conçois des architectures hybrides <strong>NAS / On-Premise et Cloud</strong> sous Docker et MLOps,
+        avec une forte capacité à modéliser des outils de simulation de production et à piloter
+        l'<strong>analyse de performance via BI</strong> (Tableau, Power BI, Looker).
+      </p>
+      <p>
+        Diplômé d'un <strong>Master Big Data</strong> à l'Université Paris-VIII, je m'engage
+        également dans la médiation numérique via Emmaüs Connect.
+      </p>
+
+      <div class="about-tags">
+        <span class="tag">Modélisation prédictive</span>
+        <span class="tag">MLOps</span>
+        <span class="tag">Computer Vision</span>
+        <span class="tag">GenAI / RAG</span>
+        <span class="tag">Data Analytics</span>
+        <span class="tag">Business Intelligence</span>
+        <span class="tag">Séries temporelles</span>
+        <span class="tag">PySpark</span>
+      </div>
+    </div>
+
+    <div class="about-stats reveal">
+      <div class="stat-card">
+        <div class="num">3+</div>
+        <div class="desc">Années d'expérience en Data Science & MLOps</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">5+</div>
+        <div class="desc">Projets IA déployés en production</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">92%</div>
+        <div class="desc">Précision RAG — réduction des hallucinations</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">−25%</div>
+        <div class="desc">Taux d'erreur réduit par A/B testing (Numconseils)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header reveal">
+    <span class="section-num">02 —</span>
+    <h2 class="section-title">Projets</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="projects-grid">
+
+    <div class="project-card reveal">
+      <div class="project-icon" style="background:rgba(0,229,255,0.1)">🤖</div>
+      <div class="project-type">GenAI · RAG</div>
+      <div class="project-title">Agent RAG — Synthèse documentaire</div>
+      <div class="project-desc">
+        Pipeline RAG limitant les hallucinations pour la synthèse de documents complexes.
+        Architecture LangChain + OpenAI avec retrieval sémantique vectorisé.
+      </div>
+      <div class="project-metric">✦ 92% de précision</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">LangChain</span>
+        <span class="stack-tag">OpenAI API</span>
+        <span class="stack-tag">Streamlit</span>
+        <span class="stack-tag">Docker</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-icon" style="background:rgba(124,58,237,0.15)">🥗</div>
+      <div class="project-type">Computer Vision · NLP · Santé</div>
+      <div class="project-title">IA Santé — Suivi nutritionnel</div>
+      <div class="project-desc">
+        Analyse multimodale (photos + textes) pour générer des indicateurs nutritionnels
+        structurés. Modèle de vision couplé à du parsing LLM pour le suivi calorique.
+      </div>
+      <div class="project-metric">✦ 95% de fiabilité</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Gemini API</span>
+        <span class="stack-tag">OpenCV</span>
+        <span class="stack-tag">Streamlit</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-icon" style="background:rgba(245,158,11,0.12)">👁️</div>
+      <div class="project-type">Deep Learning · Biométrie</div>
+      <div class="project-title">Face Matching — Flux vidéo temps réel</div>
+      <div class="project-desc">
+        Système de reconnaissance faciale optimisé GPU sous TensorFlow, traitant
+        des flux vidéo en temps réel. Intégration OpenCV pour le preprocessing.
+      </div>
+      <div class="project-metric">✦ 60 FPS — traitement temps réel</div>
+      <div class="project-stack">
+        <span class="stack-tag">TensorFlow</span>
+        <span class="stack-tag">OpenCV</span>
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">CUDA GPU</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-icon" style="background:rgba(0,229,255,0.08)">⚡</div>
+      <div class="project-type">MLOps · Recommandation</div>
+      <div class="project-title">Moteur de recommandation item-to-item</div>
+      <div class="project-desc">
+        Système de recommandation distribué item-to-item servi via FastAPI.
+        Haute disponibilité avec PySpark pour le traitement à grande échelle.
+      </div>
+      <div class="project-metric">✦ 1 000 requêtes/seconde</div>
+      <div class="project-stack">
+        <span class="stack-tag">PySpark</span>
+        <span class="stack-tag">FastAPI</span>
+        <span class="stack-tag">Docker</span>
+        <span class="stack-tag">Python</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-icon" style="background:rgba(0,229,255,0.08)">🎮</div>
+      <div class="project-type">Automation · Scripting</div>
+      <div class="project-title">PS Roms Convert</div>
+      <div class="project-desc">
+        Outil Python de conversion et d'extraction automatisée de ROMs PlayStation.
+        Gestion des formats, parsing binaire et automatisation du pipeline de traitement.
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Parsing binaire</span>
+        <span class="stack-tag">Automation</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-icon" style="background:rgba(124,58,237,0.12)">🤖</div>
+      <div class="project-type">GenAI · Assistant vocal</div>
+      <div class="project-title">Jarvis AI Assistant</div>
+      <div class="project-desc">
+        Assistant IA vocal inspiré de Jarvis, capable de répondre à des commandes vocales,
+        d'effectuer des recherches, de contrôler des actions système et de s'interfacer avec des APIs LLM.
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Speech Recognition</span>
+        <span class="stack-tag">LLM API</span>
+        <span class="stack-tag">Automation</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-icon" style="background:rgba(201,168,76,0.1)">🚆</div>
+      <div class="project-type">Data Analyst · Modélisation prédictive</div>
+      <div class="project-title">Prédiction du prix des trajets transport</div>
+      <div class="project-desc">
+        Analyse de données multi-sources (tickets, villes, stations, opérateurs) pour comparer
+        prix et durées selon le mode de transport (train, bus, covoiturage) et la distance.
+        Modélisation prédictive du prix via régression linéaire, Gradient Boosting et Random Forest.
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Scikit-learn</span>
+        <span class="stack-tag">Haversine</span>
+        <span class="stack-tag">Gradient Boosting</span>
+        <span class="stack-tag">Random Forest</span>
+        <span class="stack-tag">Seaborn</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-icon" style="background:rgba(138,117,96,0.12)">🏛️</div>
+      <div class="project-type">Data Analyst · Clustering · Cartographie</div>
+      <div class="project-title">Clustering de monuments historiques</div>
+      <div class="project-desc">
+        EDA complète sur le dataset open data des immeubles monuments historiques français,
+        clustering géospatial K-Means et visualisation cartographique interactive avec Folium
+        (heatmap, MarkerCluster).
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">K-Means</span>
+        <span class="stack-tag">Folium</span>
+        <span class="stack-tag">Pandas Profiling</span>
+        <span class="stack-tag">SQL</span>
+        <span class="stack-tag">Open Data</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+<section id="experience">
+  <div class="section-header reveal">
+    <span class="section-num">03 —</span>
+    <h2 class="section-title">Expériences</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="tl-header">
+        <div>
+          <div class="tl-role">Data Scientist</div>
+          <div class="tl-company">Projets R&D & Open Data · Créteil</div>
+        </div>
+        <div class="tl-date">Jan 2024 — Jan 2026</div>
+      </div>
+      <ul class="tl-bullets">
+        <li>Moteur prédictif Santé : extraction d'indicateurs nutritionnels (95% de fiabilité) pour le suivi métrique.</li>
+        <li>Système de Face Matching TensorFlow — optimisation GPU en temps réel pour le traitement de flux vidéo.</li>
+        <li>Moteur de recommandation item-to-item sous PySpark et FastAPI — 1 000 req/s en production.</li>
+        <li>Automatisation des cycles MLOps : disponibilité des services et rédaction de la documentation technique.</li>
+        <li>Agent RAG (GenAI) avec 92% de précision pour la synthèse de documents complexes.</li>
+      </ul>
+      <div class="tl-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">LangChain</span>
+        <span class="stack-tag">OpenAI API</span>
+        <span class="stack-tag">Gemini API</span>
+        <span class="stack-tag">PySpark</span>
+        <span class="stack-tag">TensorFlow</span>
+        <span class="stack-tag">FastAPI</span>
+        <span class="stack-tag">Docker</span>
+        <span class="stack-tag">OpenCV</span>
+        <span class="stack-tag">Streamlit</span>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-dot" style="background:#8a7560; box-shadow:0 0 12px #8a7560"></div>
+      <div class="tl-header">
+        <div>
+          <div class="tl-role">Data Scientist</div>
+          <div class="tl-company">Numconseils · Champs-sur-Marne</div>
+        </div>
+        <div class="tl-date">Mai 2023 — Nov 2023</div>
+      </div>
+      <ul class="tl-bullets">
+        <li>Cadrage d'une série temporelle multivariée (LSTM) : détection d'anomalies sur logs (89% de précision).</li>
+        <li>Optimisation des processus opérationnels : −25% de taux d'erreur via A/B testing structuré.</li>
+        <li>Industrialisation Cloud et On-Premise avec Terraform : +30% de réactivité infra.</li>
+      </ul>
+      <div class="tl-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">LSTM</span>
+        <span class="stack-tag">NLTK</span>
+        <span class="stack-tag">Terraform</span>
+        <span class="stack-tag">Docker</span>
+        <span class="stack-tag">Grafana</span>
+        <span class="stack-tag">IONOS Cloud</span>
+      </div>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-dot" style="background:#c9a84c; box-shadow:0 0 12px #c9a84c"></div>
+      <div class="tl-header">
+        <div>
+          <div class="tl-role">Data Scientist — Laboratoire LIASD</div>
+          <div class="tl-company">Université Paris-VIII · Saint-Denis</div>
+        </div>
+        <div class="tl-date">Avr 2022 — Oct 2022</div>
+      </div>
+      <ul class="tl-bullets">
+        <li>Extraction de minuties pour l'authentification biométrique sécurisée — 92% de précision.</li>
+        <li>Livraisons itératives Agile de fonctions Computer Vision (FAR &lt; 0.1%) sur portefeuille décentralisé.</li>
+        <li>Traduction des besoins métiers en cas d'usage IA (10k identifiants) — aide à la décision stratégique.</li>
+      </ul>
+      <div class="tl-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Rust</span>
+        <span class="stack-tag">OpenCV</span>
+        <span class="stack-tag">Blockchain</span>
+        <span class="stack-tag">Analyse statistique</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header reveal">
+    <span class="section-num">04 —</span>
+    <h2 class="section-title">Stack technique</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="tech-grid">
+
+    <div class="tech-category reveal">
+      <div class="tech-cat-title">// Langages</div>
+      <div class="tech-logos">
+
+        <!-- Python -->
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+            <linearGradient id="py-a" x1="70.252" y1="1237.476" x2="170.659" y2="1151.089" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)"><stop offset="0" stop-color="#5A9FD4"/><stop offset="1" stop-color="#306998"/></linearGradient>
+            <linearGradient id="py-b" x1="209.474" y1="1098.811" x2="173.62" y2="1149.537" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)"><stop offset="0" stop-color="#FFD43B"/><stop offset="1" stop-color="#FFE873"/></linearGradient>
+            <path fill="url(#py-a)" d="M63.391 1.988c-4.222.02-8.252.379-11.8 1.007-10.45 1.846-12.346 5.71-12.346 12.837v9.411h24.693v3.137H29.977c-7.176 0-13.46 4.313-15.426 12.521-2.268 9.405-2.368 15.275 0 25.096 1.755 7.311 5.947 12.519 13.124 12.519h8.491V67.234c0-8.151 7.051-15.34 15.426-15.34h24.665c6.866 0 12.346-5.654 12.346-12.548V15.833c0-6.693-5.646-11.72-12.346-12.837-4.244-.706-8.645-1.027-12.866-1.008zM50.037 9.557c2.55 0 4.634 2.117 4.634 4.721 0 2.593-2.083 4.69-4.634 4.69-2.56 0-4.633-2.097-4.633-4.69-.001-2.604 2.073-4.721 4.633-4.721z"/>
+            <path fill="url(#py-b)" d="M91.682 28.38v10.966c0 8.5-7.208 15.655-15.426 15.655H51.591c-6.756 0-12.346 5.783-12.346 12.549v23.515c0 6.693 5.818 10.628 12.346 12.547 7.816 2.297 15.312 2.713 24.665 0 6.216-1.801 12.346-5.423 12.346-12.547v-9.412H63.938v-3.138h37.012c7.176 0 9.852-5.005 12.348-12.519 2.578-7.735 2.467-15.174 0-25.096-1.774-7.145-5.161-12.521-12.348-12.521h-9.268zM77.809 87.927c2.561 0 4.634 2.097 4.634 4.692 0 2.602-2.074 4.719-4.634 4.719-2.55 0-4.633-2.117-4.633-4.719 0-2.595 2.083-4.692 4.633-4.692z"/>
+          </svg>
+          <span>Python</span>
+        </div>
+
+        <!-- Java -->
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#EA2D2E" d="M47.617 98.12s-4.767 2.774 3.397 3.71c9.892 1.13 14.947.968 25.845-1.092 0 0 2.871 1.795 6.873 3.351-24.439 10.47-55.308-.607-36.115-5.969zm-2.988-13.665s-5.348 3.959 2.823 4.805c10.567 1.091 18.91 1.18 33.354-1.6 0 0 1.993 2.025 5.132 3.131-29.542 8.64-62.446.68-41.309-6.336z"/>
+            <path fill="#EA2D2E" d="M69.802 61.271c6.025 6.935-1.58 13.17-1.58 13.17s15.289-7.891 8.269-17.777c-6.559-9.215-11.587-13.792 15.635-29.58 0 .001-42.731 10.67-22.324 34.187z"/>
+            <path fill="#EA2D2E" d="M102.123 108.229s3.529 2.91-3.888 5.159c-14.102 4.272-58.706 5.56-71.094.171-4.451-1.938 3.899-4.625 6.526-5.192 2.739-.593 4.303-.485 4.303-.485-4.953-3.487-32.013 6.85-13.743 9.815 49.821 8.076 90.817-3.637 77.896-9.468zM49.912 70.294s-22.686 5.389-8.033 7.348c6.188.828 18.518.638 30.011-.326 9.386-.799 18.811-2.512 18.811-2.512s-3.312 1.42-5.704 3.058c-23.042 6.061-67.544 3.238-54.731-2.958 10.832-5.239 19.646-4.61 19.646-4.61zm40.697 22.747c23.421-12.167 12.591-23.86 5.032-22.285-1.848.385-2.677.72-2.677.72s.688-1.079 2-1.543c14.953-5.255 26.451 15.503-4.823 23.725 0-.001.359-.327.468-.617z"/>
+            <path fill="#EA2D2E" d="M76.491 1.587S89.459 14.563 64.188 34.51c-20.266 16.006-4.621 25.13-.007 35.559-11.831-10.673-20.509-20.07-14.688-28.815C58.041 28.42 81.722 22.195 76.491 1.587z"/>
+            <path fill="#EA2D2E" d="M52.214 126.021c22.476 1.437 57-.8 57.817-11.436 0 0-1.571 4.032-18.577 7.231-19.186 3.612-42.854 3.191-56.887.874 0 .001 2.875 2.381 17.647 3.331z"/>
+          </svg>
+          <span>Java</span>
+        </div>
+
+        <!-- C / C++ -->
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#659AD3" d="M115.4 30.7L67.1 2.9c-.8-.5-1.9-.7-3.1-.7-1.2 0-2.3.3-3.1.7l-48 27.9c-1.7 1-2.9 3.5-2.9 5.4v55.7c0 1.1.2 2.4 1 3.5l106.8-62c-.6-1.2-1.5-2.1-2.4-2.7z"/>
+            <path fill="#03599C" d="M10.7 95.3c.5.8 1.2 1.5 1.9 1.9l48.2 27.9c.8.5 1.9.7 3.1.7 1.2 0 2.3-.3 3.1-.7l48-27.9c1.7-1 2.9-3.5 2.9-5.4V36.1c0-.9-.1-1.9-.6-2.8l-106.6 62z"/>
+            <path fill="#fff" d="M85.3 76.1C81.1 83.5 73.1 88.5 64 88.5c-13.5 0-24.5-11-24.5-24.5s11-24.5 24.5-24.5c9.1 0 17.1 5 21.3 12.5l13-7.5c-6.8-11.9-19.6-20-34.3-20-21.8 0-39.5 17.7-39.5 39.5s17.7 39.5 39.5 39.5c14.6 0 27.4-8 34.2-19.8l-12.9-7.6z"/>
+            <path fill="#fff" d="M104.8 62h-5.4v-5.4h-5.4V62H88.6v5.4h5.4v5.4h5.4v-5.4h5.4zm18.1 0h-5.4v-5.4h-5.4V62h-5.4v5.4h5.4v5.4h5.4v-5.4h5.4z"/>
+          </svg>
+          <span>C / C++</span>
+        </div>
+
+        <!-- Rust -->
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#CE412B" d="M63.766 8.354a55.647 55.647 0 100 111.293 55.647 55.647 0 000-111.293zm0 5.755a49.893 49.893 0 110 99.785 49.893 49.893 0 010-99.785z"/>
+            <path fill="#CE412B" d="M60.35 18.501l-1.98 3.43-3.43-1.98 1.98-3.43zm7.55 0l1.98 3.43 3.43-1.98-1.98-3.43zm-3.775 1.654a45.04 45.04 0 00-3.077.106l-.527 3.637a41.344 41.344 0 012.957-.096 41.344 41.344 0 012.957.096l-.527-3.637a45.04 45.04 0 00-2.783-.106zM40.198 26.18l-.988 3.845-3.845-.988.988-3.845zm47.604 0l.988 3.845 3.845-.988-.988-3.845zM26.18 40.198l.988 3.845-3.845.988-.988-3.845zm75.64 0l-.988 3.845 3.845.988.988-3.845zM18.501 60.35l3.43 1.98-1.98 3.43-3.43-1.98zm91 0l-3.43 1.98 1.98 3.43 3.43-1.98zM26.18 87.802l3.845-.988.988 3.845-3.845.988zm75.64 0l-3.845-.988-.988 3.845 3.845.988zM40.198 101.82l3.845.988-.988 3.845-3.845-.988zm47.604 0l-3.845.988.988 3.845 3.845-.988zM60.35 109.5l1.98-3.43 3.43 1.98-1.98 3.43zm7.55 0l-1.98-3.43-3.43 1.98 1.98 3.43z"/>
+            <path fill="#CE412B" d="M85.75 55.297l-3.422-.47a19.156 19.156 0 00-.396-1.658l2.916-1.793a22.49 22.49 0 00-2.24-3.884l-3.109 1.37a19.227 19.227 0 00-1.13-1.283l1.607-2.968a22.603 22.603 0 00-3.578-2.599l-2.093 2.728a19.252 19.252 0 00-1.554-.75l.567-3.398a22.578 22.578 0 00-4.318-.84l-.826 3.336a19.297 19.297 0 00-1.669.055l-1.159-3.208a22.576 22.576 0 00-4.226 1.215l.334 3.454a19.258 19.258 0 00-1.437.962l-2.484-2.434a22.601 22.601 0 00-3.31 2.934l1.93 2.843a19.236 19.236 0 00-.98 1.4l-3.327-.918a22.506 22.506 0 00-1.79 4.09l3.031 1.44a19.146 19.146 0 00-.247 1.678l-3.44.695a22.53 22.53 0 00.27 4.382l3.458-.376a19.18 19.18 0 00.566 1.603l-2.804 2.003a22.579 22.579 0 002.006 3.975l3.003-1.6a19.212 19.212 0 001.105 1.22l-1.385 3.1a22.602 22.602 0 003.34 2.79l2.29-2.622c.51.26 1.033.5 1.567.715l-.256 3.47a22.578 22.578 0 004.264 1.016l.605-3.398c.553.039 1.11.056 1.67.049l.97 3.307a22.579 22.579 0 004.292-.804l-.532-3.437a19.294 19.294 0 001.51-.879l2.61 2.481a22.603 22.603 0 003.453-2.698l-1.773-2.936a19.24 19.24 0 001.034-1.336l3.243 1.076a22.507 22.507 0 001.948-3.919l-2.937-1.581c.173-.538.32-1.088.44-1.644l3.448.2a22.534 22.534 0 00.002-4.387zm-22.25 11.944a10.237 10.237 0 110-20.474 10.237 10.237 0 010 20.474z"/>
+          </svg>
+          <span>Rust</span>
+        </div>
+
+        <!-- R -->
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#2369BD" d="M64 3.564C30.578 3.564 3.564 30.578 3.564 64S30.578 124.436 64 124.436 124.436 97.422 124.436 64 97.422 3.564 64 3.564z"/>
+            <path fill="#75AADB" d="M64 9.846C33.99 9.846 9.846 33.99 9.846 64S33.99 118.154 64 118.154 118.154 94.01 118.154 64 94.01 9.846 64 9.846z"/>
+            <path fill="#2369BD" d="M64 16.128C37.38 16.128 15.897 36.957 15.104 63.404h97.792C112.103 36.957 90.62 16.128 64 16.128zM15.104 64.596C15.897 91.043 37.38 111.872 64 111.872c26.62 0 48.103-20.829 48.896-47.276H15.104z"/>
+            <path fill="#fff" d="M79.198 38.84H52.96v20.238h26.238c5.517 0 9.956-4.439 9.956-9.956v-.326c0-5.517-4.439-9.956-9.956-9.956zM52.96 88.6V66.77h16.38l12.43 21.83h13.4L81.3 65.834C87.33 63.7 91.643 57.93 91.643 51.122v-.326C91.643 42.398 84.497 35.252 75.098 35.252H45.064V92.19H52.96V88.6z"/>
+          </svg>
+          <span>R</span>
+        </div>
+
+        <!-- OCaml -->
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+            <rect width="128" height="128" rx="14" fill="#EC6813"/>
+            <path fill="#fff" d="M22 44h12v8h8v-8h12v40H42V68h-8v16H22zm44 0h28v8H78v6h14v8H78v6h16v8H66zm36 0h12v32h12v8H102z"/>
+          </svg>
+          <span>OCaml</span>
+        </div>
+
+        <!-- SQL -->
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#336791" d="M93.809 92.112c.785-6.533.55-7.492 5.416-6.433l1.235.108c3.742.17 8.637-.602 11.513-1.938 6.191-2.873 9.861-7.668 3.758-6.409-13.924 2.873-14.881-1.842-14.881-1.842 14.703-21.815 20.849-49.508 15.543-56.287-14.47-18.489-39.517-9.746-39.936-9.52l-.134.025c-2.751-.571-5.83-.912-9.289-.968-6.301-.104-11.082 1.652-14.709 4.402 0 0-44.683-18.409-42.604 23.151.442 8.841 12.672 66.898 27.26 49.428 5.33-6.43 10.487-11.865 10.487-11.865 2.559 1.703 5.622 2.564 8.834 2.255l.249-.212c-.078.796-.044 1.575.099 2.497-3.757 4.199-2.653 4.936-10.166 6.482-7.602 1.566-3.136 4.355-.221 5.084 3.535.884 11.712 2.136 17.238-5.598l-.221.882c1.474 1.18 2.507 7.672 2.329 13.545-.178 5.873-.295 9.894.884 13.048 1.179 3.155 2.356 10.254 12.4 8.136 8.41-1.781 14.309-6.399 14.987-14.467"/>
+            <path fill="#fff" d="M63.289 88.02c-.5 17.662 0 35.493 1.668 39.821 1.667 4.329 5.222 12.604 15.317 10.47 8.448-1.799 11.768-5.58 13.043-13.823.96-6.199 3.207-22.878 3.538-26.229l-33.566-10.239z"/>
+            <path fill="#fff" d="M64.938 57.567c-.418 6.235-1.068 19.885-.567 25.552.03.33.076.636.122.938-1.37.177-2.677.117-3.88-.177l-11.92-26.313H64.938z"/>
+            <path fill="#336791" d="M103.382 25.397c-1.01-6.734-2.22-13.31-5.37-17.876-3.437-4.95-6.882-8.498-15.53-8.498l-13.57.134c-8.52.049-12.093 3.492-15.505 8.405-3.15 4.546-4.32 11.142-5.304 17.835l9.573 17.08 9.573-17.08h26.56l9.573 17.08z"/>
+          </svg>
+          <span>SQL</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="tech-category reveal">
+      <div class="tech-cat-title">// ML / Deep Learning</div>
+      <div class="tech-logos">
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path d="M27.35 80.52l10.68-10.92 22.84 17.57L87.52 37 112 52.44 64.89 117z" fill="#FF6F00"/><path d="M27.35 80.52L64.89 117 17.78 52.44 42.02 37l22.87 50.17L54.2 70.52z" fill="#FF6F00" opacity=".5"/></svg>
+          <span>TensorFlow</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#EE4C2C" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><path fill="#fff" d="M96 64c0 17.7-14.3 32-32 32S32 81.7 32 64s14.3-32 32-32 32 14.3 32 32z" opacity=".2"/><text x="64" y="71" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="sans-serif">PyTorch</text></svg>
+          <span>PyTorch</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#F7931E" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="71" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff" font-family="sans-serif">sklearn</text></svg>
+          <span>Scikit-learn</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#013243" d="M8 8h112v112H8z"/><path fill="#4DABCF" d="M30 30h68v68H30z" opacity=".3"/><text x="64" y="71" text-anchor="middle" font-size="18" font-weight="bold" fill="#4DABCF" font-family="monospace">NumPy</text></svg>
+          <span>NumPy</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#150458" d="M8 8h112v112H8z"/><path fill="#E70488" d="M30 30h68v68H30z" opacity=".3"/><text x="64" y="71" text-anchor="middle" font-size="14" font-weight="bold" fill="#E70488" font-family="monospace">pandas</text></svg>
+          <span>Pandas</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#00599C" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="71" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="sans-serif">Dataiku</text></svg>
+          <span>Dataiku DSS</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#3EAF7C" d="M8 8h112v112H8z" opacity=".1" rx="8"/><path fill="#3EAF7C" d="M64 20L20 44v40l44 24 44-24V44z" opacity=".3"/><text x="64" y="71" text-anchor="middle" font-size="14" font-weight="bold" fill="#3EAF7C" font-family="monospace">Gensim</text></svg>
+          <span>Gensim</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#09A3D5" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="71" text-anchor="middle" font-size="15" font-weight="bold" fill="#09A3D5" font-family="sans-serif">spaCy</text></svg>
+          <span>spaCy</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#11A9AC" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="71" text-anchor="middle" font-size="14" font-weight="bold" fill="#11A9AC" font-family="sans-serif">NLTK</text></svg>
+          <span>NLTK</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-category reveal">
+      <div class="tech-cat-title">// GenAI & LLM</div>
+      <div class="tech-logos">
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#412991" d="M8 8h112v112H8z" rx="10" opacity=".15"/><path fill="#412991" d="M64 20L20 44v40l44 24 44-24V44z"/><text x="64" y="71" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff" font-family="sans-serif">LangChain</text></svg>
+          <span>LangChain</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#10A37F" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="71" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="sans-serif">OpenAI</text></svg>
+          <span>OpenAI API</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#4285F4" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="71" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="sans-serif">Gemini</text></svg>
+          <span>Gemini API</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#FF6F00" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="71" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="sans-serif">Mistral</text></svg>
+          <span>Mistral</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#00B4D8" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="71" text-anchor="middle" font-size="16" font-weight="bold" fill="#00B4D8" font-family="sans-serif">RAG</text></svg>
+          <span>RAG</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#FF4B4B" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="71" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff" font-family="sans-serif">Streamlit</text></svg>
+          <span>Streamlit</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-category reveal">
+      <div class="tech-cat-title">// Data Engineering & Cloud</div>
+      <div class="tech-logos">
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#E25444" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z" opacity=".15"/><path fill="#E25444" d="M44 44h40v40H44z" opacity=".3"/><text x="64" y="71" text-anchor="middle" font-size="16" font-weight="bold" fill="#E25444" font-family="sans-serif">Spark</text></svg>
+          <span>PySpark</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#2496ED" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><path fill="#fff" d="M48 48h32v32H48z" opacity=".3"/><text x="64" y="72" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="sans-serif">Docker</text></svg>
+          <span>Docker</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#7B42BC" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff" font-family="sans-serif">Terraform</text></svg>
+          <span>Terraform</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#4285F4" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="sans-serif">GCP</text></svg>
+          <span>GCP</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#FF9900" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="sans-serif">AWS</text></svg>
+          <span>AWS EC2</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#00C7B7" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff" font-family="sans-serif">FastAPI</text></svg>
+          <span>FastAPI</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#00AEE0" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="71" text-anchor="middle" font-size="13" font-weight="bold" fill="#00AEE0" font-family="sans-serif">Airflow</text></svg>
+          <span>Airflow</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#29B5E8" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="71" text-anchor="middle" font-size="13" font-weight="bold" fill="#29B5E8" font-family="sans-serif">Snowflake</text></svg>
+          <span>Snowflake</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#00758F" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#00758F" font-family="monospace">Big
+Query</text></svg>
+          <span>BigQuery</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#F46800" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#F46800" font-family="monospace">Hadoop</text></svg>
+          <span>Hadoop</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-category reveal">
+      <div class="tech-cat-title">// Computer Vision</div>
+      <div class="tech-logos">
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#5C3EE8" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff" font-family="sans-serif">OpenCV</text></svg>
+          <span>OpenCV</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#FF6F00" d="M27.35 80.52l10.68-10.92 22.84 17.57L87.52 37 112 52.44 64.89 117z"/><text x="64" y="40" text-anchor="middle" font-size="11" fill="#FF6F00" font-family="sans-serif">TF</text></svg>
+          <span>TensorFlow</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#9B59B6" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="71" text-anchor="middle" font-size="12" font-weight="bold" fill="#9B59B6" font-family="sans-serif">Face Match</text></svg>
+          <span>Face Matching</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-category reveal">
+      <div class="tech-cat-title">// DataViz & BI</div>
+      <div class="tech-logos">
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#E97627" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff" font-family="sans-serif">Tableau</text></svg>
+          <span>Tableau</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#F2C811" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#333" font-family="sans-serif">Power BI</text></svg>
+          <span>Power BI</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#11A9AC" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="sans-serif">Looker</text></svg>
+          <span>Looker</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#11557C" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff" font-family="sans-serif">Matplotlib</text></svg>
+          <span>Matplotlib</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#4C78A8" d="M64 8C33.6 8 8 33.6 8 64s25.6 56 56 56 56-25.6 56-56S94.4 8 64 8z"/><text x="64" y="72" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="sans-serif">Seaborn</text></svg>
+          <span>Seaborn</span>
+        </div>
+        <div class="tech-logo-item">
+          <svg viewBox="0 0 128 128"><path fill="#E84393" d="M8 8h112v112H8z" rx="8" opacity=".15"/><text x="64" y="71" text-anchor="middle" font-size="14" font-weight="bold" fill="#E84393" font-family="sans-serif">Grafana</text></svg>
+          <span>Grafana</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJETS ACADÉMIQUES -->
+<section id="academic">
+  <div class="section-header reveal">
+    <span class="section-num">05 —</span>
+    <h2 class="section-title">Projets académiques</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- MASTER -->
+  <div class="acad-level reveal">
+    <div class="acad-level-label">
+      <span class="acad-badge master">Master Big Data</span>
+      <span class="acad-school">Université Paris-VIII · 2023</span>
+    </div>
+
+    <div class="acad-subsection">
+      <div class="acad-subsection-title">🤖 Data Scientist</div>
+      <div class="acad-grid">
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🧠</span><span class="acad-lang">C</span></div><div class="acad-title">Kohonen Self-Organizing Map</div><div class="acad-desc">Implémentation d'un réseau de neurones non supervisé pour de la classification.</div><div class="acad-tags"><span class="acad-tag">Unsupervised</span><span class="acad-tag">Neural Network</span><span class="acad-tag">C</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🦠</span><span class="acad-lang">PySpark</span></div><div class="acad-title">Prédiction COVID</div><div class="acad-desc">Clustering non supervisé sur les données COVID pour cartographier la répartition des zones affectées.</div><div class="acad-tags"><span class="acad-tag">Clustering</span><span class="acad-tag">PySpark</span><span class="acad-tag">Unsupervised</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🌬️</span><span class="acad-lang">R</span></div><div class="acad-title">Prévision des pics d'ozone</div><div class="acad-desc">Optimisation de la prévision de concentration d'ozone par régression logistique, réseaux de neurones, arbres de décision et SVM.</div><div class="acad-tags"><span class="acad-tag">SVM</span><span class="acad-tag">Régression</span><span class="acad-tag">R</span><span class="acad-tag">ML</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">📈</span><span class="acad-lang">Python · NumPy</span></div><div class="acad-title">Régressions — Modélisation prédictive</div><div class="acad-desc">Implémentation from scratch de la régression linéaire simple et multiple avec ajout de bruit gaussien, calcul matriciel et visualisation des résidus.</div><div class="acad-tags"><span class="acad-tag">Régression linéaire</span><span class="acad-tag">NumPy</span><span class="acad-tag">Matplotlib</span><span class="acad-tag">Statistiques</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🔵</span><span class="acad-lang">Python · Scikit-learn</span></div><div class="acad-title">K-Means &amp; EM — Clustering bi-dimensionnel</div><div class="acad-desc">Comparaison des algorithmes K-Means et Expectation-Maximization sur des données bi-dimensionnelles avec visualisation animée de la convergence.</div><div class="acad-tags"><span class="acad-tag">K-Means</span><span class="acad-tag">EM</span><span class="acad-tag">Clustering</span><span class="acad-tag">Seaborn</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">⭐</span><span class="acad-lang">Python · Scikit-learn</span></div><div class="acad-title">Analyse de sentiments — Amazon Reviews</div><div class="acad-desc">Pipeline d'analyse de sentiments sur avis Amazon avec Scikit-learn : vectorisation TF-IDF, entraînement de classifieur et évaluation des performances.</div><div class="acad-tags"><span class="acad-tag">Sentiment Analysis</span><span class="acad-tag">TF-IDF</span><span class="acad-tag">Scikit-learn</span><span class="acad-tag">NLP</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🏛️</span><span class="acad-lang">Python · Scikit-learn</span></div><div class="acad-title">Classification politique de textes</div><div class="acad-desc">Classification de discours parlementaires suédois (Riksdag) par affiliation politique — pipeline NLP complet avec vectorisation et classification supervisée.</div><div class="acad-tags"><span class="acad-tag">Text Classification</span><span class="acad-tag">Politique</span><span class="acad-tag">Scikit-learn</span><span class="acad-tag">NLP</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">📝</span><span class="acad-lang">Python · Regex · Pandas</span></div><div class="acad-title">Fouille de texte — Regex &amp; Pandas</div><div class="acad-desc">Extraction d'informations textuelles via expressions régulières — parsing d'emails, nettoyage et structuration de données texte avec Pandas.</div><div class="acad-tags"><span class="acad-tag">NLP</span><span class="acad-tag">Regex</span><span class="acad-tag">Pandas</span><span class="acad-tag">Text Mining</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🔤</span><span class="acad-lang">Python · NLTK</span></div><div class="acad-title">NLP Preprocessing avec NLTK</div><div class="acad-desc">Prétraitement de texte : tokenisation, lemmatisation, stemming, suppression des stopwords et analyse de corpus avec la bibliothèque NLTK.</div><div class="acad-tags"><span class="acad-tag">NLTK</span><span class="acad-tag">Tokenisation</span><span class="acad-tag">Lemmatisation</span><span class="acad-tag">NLP</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">📚</span><span class="acad-lang">Python · Scikit-learn</span></div><div class="acad-title">Clustering de textes littéraires</div><div class="acad-desc">Classification d'ouvrages contemporains par auteur (Atwood, King, Grisham) via clustering Scikit-learn sur corpus pré-traité.</div><div class="acad-tags"><span class="acad-tag">Clustering</span><span class="acad-tag">Scikit-learn</span><span class="acad-tag">Text Classification</span><span class="acad-tag">NLP</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🗂️</span><span class="acad-lang">Python · Gensim · spaCy</span></div><div class="acad-title">Topic Modeling avec LDA &amp; Gensim</div><div class="acad-desc">Modélisation thématique sur le dataset Newsgroups avec LDA, prétraitement spaCy et évaluation de cohérence des topics.</div><div class="acad-tags"><span class="acad-tag">LDA</span><span class="acad-tag">Gensim</span><span class="acad-tag">spaCy</span><span class="acad-tag">Topic Modeling</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🔍</span><span class="acad-lang">Python · Gensim · pyLDAvis</span></div><div class="acad-title">Topic Modeling LDA — Corpus ABC News</div><div class="acad-desc">Pipeline de Topic Modeling sur le corpus ABC News : LDA, LSI, HDP avec Gensim et visualisation interactive pyLDAvis.</div><div class="acad-tags"><span class="acad-tag">LDA</span><span class="acad-tag">LSI</span><span class="acad-tag">HDP</span><span class="acad-tag">pyLDAvis</span><span class="acad-tag">Gensim</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">📊</span><span class="acad-lang">Python · Gensim</span></div><div class="acad-title">Topic Modeling with Gensim — LDA avancé</div><div class="acad-desc">Extraction de topics latents sur grands volumes de texte avec LDA Gensim — optimisation de la cohérence et visualisation des distributions thématiques.</div><div class="acad-tags"><span class="acad-tag">LDA</span><span class="acad-tag">Gensim</span><span class="acad-tag">Topic Modeling</span><span class="acad-tag">NLP avancé</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">📖</span><span class="acad-lang">Python · Gensim</span></div><div class="acad-title">Wikipedia Word Embedding</div><div class="acad-desc">Entraînement de modèles Word2Vec / GloVe sur un corpus Wikipedia pour apprendre des représentations vectorielles de mots et explorer les relations sémantiques.</div><div class="acad-tags"><span class="acad-tag">Word2Vec</span><span class="acad-tag">Word Embedding</span><span class="acad-tag">Gensim</span><span class="acad-tag">NLP</span></div></div>
+      </div>
+    </div>
+
+    <div class="acad-subsection">
+      <div class="acad-subsection-title">📊 Data Analyst</div>
+      <div class="acad-grid">
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🌍</span><span class="acad-lang">PySpark</span></div><div class="acad-title">Répartition de la pollution mondiale</div><div class="acad-desc">Classification des données mondiales de pollution via modèles supervisés pour identifier les régions les plus affectées.</div><div class="acad-tags"><span class="acad-tag">Supervised</span><span class="acad-tag">PySpark</span><span class="acad-tag">Classification</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">⚡</span><span class="acad-lang">Python · Tableau</span></div><div class="acad-title">Visualisation de données massives</div><div class="acad-desc">Analyse des centrales électriques mondiales par zone géographique avec Tableau Desktop. Focus France métropolitaine et DOM-TOM.</div><div class="acad-tags"><span class="acad-tag">Tableau Desktop</span><span class="acad-tag">DataViz</span><span class="acad-tag">Big Data</span><span class="acad-tag">Kaggle</span></div></div>
+      </div>
+    </div>
+
+    <div class="acad-subsection">
+      <div class="acad-subsection-title">⚙️ Data Engineer</div>
+      <div class="acad-grid">
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🎬</span><span class="acad-lang">Hadoop · AWS</span></div><div class="acad-title">Catalogue de service de streaming</div><div class="acad-desc">Application s'appuyant sur l'écosystème Hadoop (HDFS, Hive, Sqoop, MapReduce) dans un cluster AWS pour un outil de recherche.</div><div class="acad-tags"><span class="acad-tag">Hadoop</span><span class="acad-tag">HDFS</span><span class="acad-tag">Hive</span><span class="acad-tag">AWS</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🛒</span><span class="acad-lang">PySpark</span></div><div class="acad-title">Recommandation produits temps réel</div><div class="acad-desc">Plateforme de recommandation analysant les comportements d'achat et interactions utilisateurs d'un e-commerce.</div><div class="acad-tags"><span class="acad-tag">Recommandation</span><span class="acad-tag">PySpark</span><span class="acad-tag">Temps réel</span></div></div>
+        <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🌡️</span><span class="acad-lang">Python · Arduino · C</span></div><div class="acad-title">Surveillance de température ambiante</div><div class="acad-desc">Pipeline IoT complet : collecte de la température via une architecture Arduino, exposition via API, application mobile d'affichage en temps réel et perceptron multicouche pour la prédiction de température.</div><div class="acad-tags"><span class="acad-tag">Arduino</span><span class="acad-tag">IoT</span><span class="acad-tag">API</span><span class="acad-tag">Mobile</span><span class="acad-tag">MLP</span><span class="acad-tag">Prédiction</span></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LICENCE -->
+  <div class="acad-level reveal" style="margin-top:3.5rem">
+    <div class="acad-level-label">
+      <span class="acad-badge licence">Licence Informatique</span>
+      <span class="acad-school">Université Paris-Est Créteil · 2016–2020</span>
+    </div>
+    <div class="acad-grid">
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">☕</span><span class="acad-lang">OCaml · C</span></div><div class="acad-title">Évaluateur Java</div><div class="acad-desc">Analyseur et évaluateur de code Java en OCaml et C — parsing lexical et syntaxique, construction d'un arbre AST et évaluation des expressions.</div><div class="acad-tags"><span class="acad-tag">OCaml</span><span class="acad-tag">C</span><span class="acad-tag">Compilateur</span><span class="acad-tag">AST</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">💣</span><span class="acad-lang">C · termios</span></div><div class="acad-title">Bomberman</div><div class="acad-desc">Recréation du jeu Bomberman en terminal avec gestion des entrées clavier en temps réel via termios, moteur de jeu maison et IA ennemie basique.</div><div class="acad-tags"><span class="acad-tag">C</span><span class="acad-tag">termios</span><span class="acad-tag">Terminal</span><span class="acad-tag">Temps réel</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🗺️</span><span class="acad-lang">Python</span></div><div class="acad-title">Algorithmes de recherche heuristique</div><div class="acad-desc">Implémentation et comparaison d'algorithmes (A*, BFS, DFS, Greedy, IDA*) sur le problème de routage de la carte de Roumanie.</div><div class="acad-tags"><span class="acad-tag">Python</span><span class="acad-tag">A*</span><span class="acad-tag">BFS / DFS</span><span class="acad-tag">Heuristique</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🖨️</span><span class="acad-lang">Java · C · C++</span></div><div class="acad-title">Logiciel de génération de formes 3D</div><div class="acad-desc">Logiciel complet de génération de fichiers STL pour imprimante 3D ZMorph VX avec opérations booléennes, convertisseur binaire→ASCII et interface Java Swing.</div><div class="acad-tags"><span class="acad-tag">Java</span><span class="acad-tag">C</span><span class="acad-tag">C++</span><span class="acad-tag">STL / gcode</span><span class="acad-tag">Impression 3D</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">⚔️</span><span class="acad-lang">C++</span></div><div class="acad-title">Jeu RPG</div><div class="acad-desc">Conception d'un jeu de rôle avec gestion des personnages, système de combat au tour par tour, inventaire et progression de niveaux.</div><div class="acad-tags"><span class="acad-tag">C++</span><span class="acad-tag">POO</span><span class="acad-tag">Game Design</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🗄️</span><span class="acad-lang">OCaml</span></div><div class="acad-title">Évaluateur SQL</div><div class="acad-desc">Parseur et évaluateur de requêtes SQL en programmation fonctionnelle — analyse syntaxique, arbre d'expressions et exécution de requêtes.</div><div class="acad-tags"><span class="acad-tag">OCaml</span><span class="acad-tag">Fonctionnel</span><span class="acad-tag">SQL</span><span class="acad-tag">Parseur</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">👾</span><span class="acad-lang">Java</span></div><div class="acad-title">Pac-Man</div><div class="acad-desc">Recréation du jeu arcade Pac-Man avec gestion des collisions, comportements des fantômes par machine à états et rendu graphique 2D.</div><div class="acad-tags"><span class="acad-tag">Java</span><span class="acad-tag">IA basique</span><span class="acad-tag">2D</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🏓</span><span class="acad-lang">Android Studio</span></div><div class="acad-title">Ping Pong mobile</div><div class="acad-desc">Jeu Ping Pong pour Android avec gestion des événements tactiles, physique de balle en temps réel et interface adaptée mobile.</div><div class="acad-tags"><span class="acad-tag">Android</span><span class="acad-tag">Mobile</span><span class="acad-tag">Temps réel</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🌐</span><span class="acad-lang">Java</span></div><div class="acad-title">Serveur WebDAV</div><div class="acad-desc">Implémentation d'un serveur WebDAV permettant l'accès distant à des ressources fichiers via HTTP — gestion des méthodes PUT, GET, DELETE, PROPFIND.</div><div class="acad-tags"><span class="acad-tag">Java</span><span class="acad-tag">Réseau</span><span class="acad-tag">HTTP</span><span class="acad-tag">WebDAV</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">📝</span><span class="acad-lang">C · Unix</span></div><div class="acad-title">Éditeur de texte (Vim amélioré)</div><div class="acad-desc">Éditeur de texte en ligne de commande inspiré de Vim, avec modes insertion/commande, recherche, remplacement et gestion avancée du buffer.</div><div class="acad-tags"><span class="acad-tag">C</span><span class="acad-tag">Unix</span><span class="acad-tag">Système</span><span class="acad-tag">CLI</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🎪</span><span class="acad-lang">PHP · CSS · SQL</span></div><div class="acad-title">Site web — Gestion d'événements</div><div class="acad-desc">Application web full-stack de gestion des événements — CRUD complet, authentification, interface Bootstrap responsive.</div><div class="acad-tags"><span class="acad-tag">PHP</span><span class="acad-tag">SQL</span><span class="acad-tag">Bootstrap</span><span class="acad-tag">CSS</span></div></div>
+      <div class="acad-card reveal"><div class="acad-card-top"><span class="acad-icon">🔄</span><span class="acad-lang">C</span></div><div class="acad-title">Convertisseur SVG → PDF</div><div class="acad-desc">Outil de conversion de fichiers vectoriels SVG en PDF — parsing XML, interprétation des primitives graphiques et génération du format PDF.</div><div class="acad-tags"><span class="acad-tag">C</span><span class="acad-tag">SVG</span><span class="acad-tag">PDF</span><span class="acad-tag">Parsing</span></div></div>
+    </div>
+  </div>
+
+</section>
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="section-header reveal">
+    <span class="section-num">06 —</span>
+    <h2 class="section-title">Certifications & Formation</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="certs-subsection reveal">
+    <div class="certs-sub-title">🎓 Diplômes</div>
+    <div class="certs-grid">
+      <div class="cert-card reveal">
+        <div class="cert-icon">🎓</div>
+        <div>
+          <div class="cert-name">Master Big Data</div>
+          <div class="cert-issuer">Université Paris-VIII · Saint-Denis · 2023</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🎓</div>
+        <div>
+          <div class="cert-name">Licence Informatique</div>
+          <div class="cert-issuer">Université Paris-Est Créteil · 2020</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="certs-subsection reveal" style="margin-top:2rem">
+    <div class="certs-sub-title">☁️ Cloud & Data Engineering</div>
+    <div class="certs-grid">
+      <div class="cert-card reveal">
+        <div class="cert-icon">☁️</div>
+        <div>
+          <div class="cert-name">Google Data Analytics Professional</div>
+          <div class="cert-issuer">Google · Coursera · 2026</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">☁️</div>
+        <div>
+          <div class="cert-name">Google Cloud Computing Foundations</div>
+          <div class="cert-issuer">Google Cloud · 2026</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">❄️</div>
+        <div>
+          <div class="cert-name">Snowflake Foundations</div>
+          <div class="cert-issuer">DataCamp · 2025</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🐙</div>
+        <div>
+          <div class="cert-name">Git Fundamentals</div>
+          <div class="cert-issuer">DataCamp · oct. 2025</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🐙</div>
+        <div>
+          <div class="cert-name">GitHub Foundations</div>
+          <div class="cert-issuer">DataCamp · oct. 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="certs-subsection reveal" style="margin-top:2rem">
+    <div class="certs-sub-title">🤖 Data Science & Machine Learning</div>
+    <div class="certs-grid">
+      <div class="cert-card reveal">
+        <div class="cert-icon">🧠</div>
+        <div>
+          <div class="cert-name">Applied Data Science with Python – Level 2</div>
+          <div class="cert-issuer">IBM · août 2023</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🧠</div>
+        <div>
+          <div class="cert-name">Machine Learning with Python</div>
+          <div class="cert-issuer">IBM · août 2023</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🧠</div>
+        <div>
+          <div class="cert-name">Machine Learning with Python</div>
+          <div class="cert-issuer">freeCodeCamp · juin 2025</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">📊</div>
+        <div>
+          <div class="cert-name">Data Analysis with Python</div>
+          <div class="cert-issuer">IBM · août 2023</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">📊</div>
+        <div>
+          <div class="cert-name">Data Visualization with Python</div>
+          <div class="cert-issuer">IBM · août 2023</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🧹</div>
+        <div>
+          <div class="cert-name">Data Cleaning</div>
+          <div class="cert-issuer">Kaggle · août 2023</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🤖</div>
+        <div>
+          <div class="cert-name">Elements of AI — Introduction to AI</div>
+          <div class="cert-issuer">University of Helsinki · Sorbonne Université · janv. 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="certs-subsection reveal" style="margin-top:2rem">
+    <div class="certs-sub-title">🐍 Python & SQL</div>
+    <div class="certs-grid">
+      <div class="cert-card reveal">
+        <div class="cert-icon">🐍</div>
+        <div>
+          <div class="cert-name">Python for Data Science</div>
+          <div class="cert-issuer">IBM · août 2023</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🐍</div>
+        <div>
+          <div class="cert-name">Intermediate Python</div>
+          <div class="cert-issuer">DataCamp · oct. 2025</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🐍</div>
+        <div>
+          <div class="cert-name">Scientific Computing with Python</div>
+          <div class="cert-issuer">freeCodeCamp · juin 2025</div>
+        </div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">🗄️</div>
+        <div>
+          <div class="cert-name">Intermediate SQL</div>
+          <div class="cert-issuer">DataCamp · oct. 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-title reveal">Travaillons ensemble.</div>
+  <p class="contact-sub reveal">Disponible immédiatement · Créteil & Remote</p>
+
+  <div class="contact-links reveal">
+    <a href="mailto:jeanchristophe.lafleur1@gmail.com" class="contact-link">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      jeanchristophe.lafleur1@gmail.com
+    </a>
+    <a href="https://linkedin.com/in/jean-christophe-lafleur" target="_blank" class="contact-link">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      LinkedIn
+    </a>
+    <a href="https://github.com/jclaf" target="_blank" class="contact-link">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+      github.com/jclaf
+    </a>
+
+<script>
+  // Cursor glow
+  const glow = document.getElementById('cursorGlow');
+  if(glow) document.addEventListener('mousemove', e => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    reveals.forEach(el => el.classList.add('animate-ready'));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
